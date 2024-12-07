@@ -48,36 +48,46 @@ def sum_of_acceleration(planet, planets):
             net_acc += planet.calc_acceleration(other_planet)
     
     return net_acc
+def exp_Euler(planet, planets, dt):
+
+    new_acc = sum_of_acceleration(planet, planets)
+    planet.velocity += new_acc * dt
+    planet.pos  += planet.velocity * dt
+    planet.add_new_pos()
+
+
+
+
+
 
 
 def rk(planet, planets, dt):
-        #RK4
-    #K1
-    #K1_pos = planet.pos
-    K1_vel = planet.velocity
+    #RK4
+    # K1
     K1_acc = sum_of_acceleration(planet, planets)
-    
-    
-    #K2
-    #K2_pos = planet.pos + 0.5 * K1_vel * dt
+    K1_vel = planet.velocity
+
+    # K2
     K2_vel = planet.velocity + 0.5 * K1_acc * dt
+    K2_pos = planet.pos + 0.5 * K1_vel * dt
+    planet.pos, planet.velocity = K2_pos, K2_vel
     K2_acc = sum_of_acceleration(planet, planets)
 
-    #K3
-    #K3_pos = planet.pos + 0.5 * K2_vel * dt
-    K3_vel = planet.velocity * 0.5 * K2_acc * dt
-    K3_acc = sum_of_acceleration(planet, planets)   
+    # K3
+    K3_vel = planet.velocity + 0.5 * K2_acc * dt
+    K3_pos = planet.pos + 0.5 * K2_vel * dt
+    planet.pos, planet.velocity = K3_pos, K3_vel
+    K3_acc = sum_of_acceleration(planet, planets)
 
+    # K4
+    K4_vel = planet.velocity + K3_acc * dt
+    K4_pos = planet.pos + K3_vel * dt
+    planet.pos, planet.velocity = K4_pos, K4_vel
+    K4_acc = sum_of_acceleration(planet, planets)
 
-    #K4
-    #K4_pos = planet.pos +  K3_vel * dt
-    K4_vel = planet.velocity +  K3_acc * dt
-    K4_acc = sum_of_acceleration(planet, planets)  
-    
-    #These two are y_n+1 = y_n + 1/6(k1 + 2k2 +2k3 + k4)
-    planet.velocity += (1/6) * (K1_acc + 2*K2_acc + 2*K3_acc + K4_acc) * dt         
-    planet.pos += (1/6) * (K1_vel + 2*K2_vel + 2*K3_vel + K4_vel) * dt
-    
+    # Uppdatera planetens position och hastighet
+    planet.velocity += (1 / 6) * (K1_acc + 2 * K2_acc + 2 * K3_acc + K4_acc) * dt
+    planet.pos += (1 / 6) * (K1_vel + 2 * K2_vel + 2 * K3_vel + K4_vel) * dt
     planet.add_new_pos()
 
 
@@ -88,6 +98,11 @@ def simulate(planets, steps, method, dt):
         for _ in range(steps):
             for planet in planets:
                 rk(planet, planets, dt)
+
+    elif method == "EE":
+        for _ in range(steps):
+            for planet in planets:
+                exp_Euler(planet, planets, dt)
 
 
 def plot(planets):
@@ -114,7 +129,7 @@ def main():
     
     # Jorden (planet)
     planet2 = Celestial_body(
-        mass=5.972e24, 
+        mass=5.972e27, 
         x_init=1.496e11, 
         y_init=0, 
         dx=0,  # Tangentiell hastighet
@@ -125,7 +140,7 @@ def main():
     planets = [planet1, planet2]
     
     # Simulera med bättre tidssteg och fler iterationer
-    simulate(planets, steps=10000, method="RK", dt=3600)  # 1 timmes tidssteg
+    simulate(planets, steps=20000, method="EE", dt=6000)  # 1 timmes tidssteg
     
     # Plotta med justerade gränser
     plot(planets)
