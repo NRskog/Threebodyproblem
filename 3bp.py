@@ -73,11 +73,13 @@ def rk3(planet, planets, dt):
     # K2
     k2_vel = planet.velocity + 0.5 * k1_acc * dt
     k2_pos = planet.pos + 0.5 * k1_vel * dt
+    planet.pos, planet.velocity = k2_pos, k2_vel
     k2_acc = sum_of_acceleration(planet, planets)
 
     # K3
     k3_vel = planet.velocity + k2_acc * dt
     k3_pos = planet.pos + k2_vel * dt
+    planet.pos, planet.velocity = k3_pos, k3_vel
     k3_acc = sum_of_acceleration(planet, planets)
 
     # Uppdatera planetens position och hastighet med RK3
@@ -117,7 +119,7 @@ def rk4(planet, planets, dt):
 
 def rk_adaptive(planet, planets, dt, tol):
     min_dt = 500    
-    max_dt = 100000   
+    max_dt = 10000   
 
     # Just to be safe
     planets_rk3 = [p.copy() for p in planets]
@@ -166,7 +168,7 @@ def rk_adaptive(planet, planets, dt, tol):
 
 
 
-def simulate(planets, method, steps, dt, tol=1e-3): ##Tol around 1e-3 seems good 1e-2 horrendous
+def simulate(planets, method, steps, dt, tol=1e-4): ##Tol around 1e-3 seems good 1e-2 horrendous
  
     energy_log = []  
     
