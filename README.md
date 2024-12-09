@@ -1,4 +1,4 @@
-My solution to the classical physocs problem: "Three-body problem".
+My solution to the classical physics problem: "Three-body problem".
 
 
 Can be read about here: https://en.wikipedia.org/wiki/Three-body_problem
